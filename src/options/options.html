@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>循光WennSicht 无障碍增强设置</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.8;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px 20px 64px;
+      color: #1a1a1a;
+      background: #fff;
+    }
+    h1 { font-size: 1.6em; margin-bottom: .4em; }
+
+    /* 标题层级（2026-10-10 owner 反馈后重排）：
+       只有「分组」是 h2 —— 按 H 跳到的就是这 5 块，一眼看清整页有几件事；
+       组内每一条是 h3 —— 按 3 跳到具体条目。
+       旧版 14 个 h2 平铺，说明与设置混在同一层，按 H 会一路念下去找不到北。 */
+    h2 {
+      font-size: 1.3em;
+      margin-top: 2.8em;
+      padding-bottom: .25em;
+      border-bottom: 2px solid #1a4fa0;
+    }
+    h3 { font-size: 1.08em; margin-top: 2em; margin-bottom: .5em; }
+    h4 { font-size: 1em; margin-top: 1.6em; margin-bottom: .4em; }
+
+    /* 条目类型标签：不点开就知道这条是「要动手设置」还是「只是说明」。 */
+    .kind {
+      display: inline-block;
+      font-size: .7em;
+      font-weight: 700;
+      line-height: 1.7;
+      padding: 0 .5em;
+      border-radius: 3px;
+      margin-right: .5em;
+      vertical-align: .1em;
+      letter-spacing: .06em;
+    }
+    .kind-info { background: #eef3fa; color: #17427f; border: 1px solid #c3d4ea; }
+    .kind-set { background: #1a4fa0; color: #fff; border: 1px solid #1a4fa0; }
+
+    /* 页首目录：按 H / 按 3 的口诀 + 5 块清单，降低上手成本。 */
+    nav.toc {
+      border: 2px solid #d5dde8;
+      border-radius: 6px;
+      padding: 12px 18px 14px;
+      margin: 1.4em 0 0;
+      background: #f7f9fc;
+    }
+    nav.toc p { margin: .2em 0 .5em; }
+    nav.toc ol { margin: 0; padding-left: 1.7em; }
+    nav.toc li { margin: .15em 0; }
+    nav.toc a { color: #1a4fa0; }
+
+    /* 会话 56：首次引导已移到独立页面 src/welcome/；设置页只留一个小的重访入口。
+       刻意不加标题/区块，页首目录「共 5 块」与 h3 结构被 verify-options-page 钉死。 */
+    .welcome-retour { margin: 1em 0 0; }
+    .welcome-retour button { font-size: .9em; }
+
+    .hint { color: #444; }
+    .lead { font-weight: 700; margin-top: 1.4em; margin-bottom: .3em; }
+
+    /* 「二、在哪些网站启用」里的两条做法（全局启用 / 添加站点）：
+       它们是并列的两个选项，不是一前一后的两步。用同一外框 + 左侧色条把两者框在一起，
+       中间再放一个「或」作分隔，让「挑一条即可」这件事不用读文字就看得出来。 */
+    .routes {
+      border-left: 4px solid #1a4fa0;
+      padding-left: 16px;
+      margin-top: 1em;
+    }
+    .route-or {
+      margin: .35em 0;
+      font-weight: 700;
+      color: #1a4fa0;
+      letter-spacing: .35em;
+    }
+
+    input[type="text"] {
+      font: inherit;
+      padding: 6px 10px;
+      width: 20em;
+      max-width: 100%;
+      border: 2px solid #1a4fa0;
+      border-radius: 4px;
+    }
+    button {
+      font: inherit;
+      padding: 6px 18px;
+      border: 2px solid #1a4fa0;
+      border-radius: 4px;
+      background: #1a4fa0;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover, button:focus-visible { background: #12386f; }
+    button.danger {
+      background: #fff;
+      color: #b00020;
+      border-color: #b00020;
+      padding: 2px 12px;
+    }
+    button.danger:hover, button.danger:focus-visible { background: #b00020; color: #fff; }
+    /* 结果清单（已启用的站点 / 快捷键 / 已开启播报 / 已放行的站点）统一成一行一条：
+       左边名字、右边按键或操作按钮，读屏按列表项逐条导航即可。 */
+    ul#site-list, ul#keys-list, ul#live-list, ul#sensitive-list { list-style: none; padding: 0; }
+    ul#site-list li, ul#keys-list li, ul#live-list li, ul#sensitive-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    li .key-unbound { color: #b00020; }
+    [role="status"] { font-weight: bold; }
+    :focus-visible { outline: 3px solid #e6a700; outline-offset: 2px; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #111; color: #eee; }
+      .hint { color: #bbb; }
+      input[type="text"] { background: #1c1c1c; color: #eee; }
+      ul#site-list li, ul#keys-list li, ul#live-list li, ul#sensitive-list li { border-bottom-color: #333; }
+      li .key-unbound { color: #ff8a8a; }
+      h2 { border-bottom-color: #8ab4f8; }
+      nav.toc { background: #181818; border-color: #3a3a3a; }
+      nav.toc a { color: #8ab4f8; }
+      .welcome-retour button { background: #1b2a3f; color: #eee; border: 1px solid #3a5a86; }
+      .kind-info { background: #1b2a3f; color: #c7dbfa; border-color: #2c4a72; }
+      .kind-set { background: #8ab4f8; color: #10233c; border-color: #8ab4f8; }
+      .routes { border-left-color: #8ab4f8; }
+      .route-or { color: #8ab4f8; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>循光WennSicht 无障碍增强设置</h1>
+    <p class="hint">
+      按 <strong data-ws-key="toggle">Ctrl+Shift+Z</strong> 可在当前网页开启或关闭增强。
+    </p>
+
+    <!-- ==================== 会话 56：只留一个小的重访入口 ====================
+         首次使用引导现在是独立页面 src/welcome/welcome.html，首次安装自动打开、一次性；
+         本页不再内嵌引导内容，也不加 h2/h3（verify-options-page 的 79 条断言）。 -->
+    <p class="welcome-retour">
+      <button type="button" id="welcome-retour">重新走一遍「第一次使用」引导</button>
+    </p>
+
+    <nav class="toc" aria-label="本页目录">
+      <p>
+        <strong>本页共 5 块。</strong>按 <strong>H</strong> 在这 5 块之间跳转，按 <strong>3</strong> 跳到块内的具体条目。
+        每条标题开头的标签会说明它是什么：<span class="kind kind-info">说明</span>只是介绍、不用动手；
+        <span class="kind kind-set">设置</span>需要您选择或填写。
+      </p>
+      <ol>
+        <li><a href="#grp-start-h">一、开始使用（先看这块）</a></li>
+        <li><a href="#grp-sites-h">二、在哪些网站启用</a></li>
+        <li><a href="#grp-ai-h">三、智能功能（会调用大模型）</a></li>
+        <li><a href="#grp-ux-h">四、浏览体验</a></li>
+        <li><a href="#privacy-h">五、隐私与数据</a></li>
+      </ol>
+    </nav>
+
+    <!-- ==================== 一、开始使用 ==================== -->
+    <section class="group" aria-labelledby="grp-start-h">
+      <h2 id="grp-start-h">一、开始使用</h2>
+
+      <div class="item">
+        <h3 id="nvda-h"><span class="kind kind-set">设置：</span>让 NVDA 读得更顺</h3>
+        <p class="hint" id="nvda-desc">
+          不优化的话，读出来会很烦、不好用。点下面的按钮自动调好，只会调整与本扩展相关的设置。
+        </p>
+        <p>
+          <button type="button" id="nvda-optimize">检测并优化</button>
+          <button type="button" id="nvda-check">检查安装情况</button>
+        </p>
+        <p id="nvda-status" role="status" aria-live="polite"></p>
+        <p class="hint" id="nvda-version" hidden></p>
+        <div id="nvda-install-block" hidden>
+          <p class="hint" id="nvda-install-desc">
+            还想让它<strong>精确</strong>报出你当前读到哪一节？先装一次读屏增强组件，约一分钟。
+          </p>
+          <p>
+            <button type="button" id="nvda-install">安装读屏增强组件（建议，可选）</button>
+          </p>
+        </div>
+      </div>
+
+      <div class="item">
+        <h3 id="keys-h"><span class="kind kind-set">设置：</span>键盘快捷键</h3>
+        <p class="hint" id="keys-desc">
+          下面是本扩展所有功能的快捷键，实时显示您当前的实际绑定。其中「打开扩展设置」在 Chrome 的快捷键页里叫「启用扩展程序」，按它等于点一下工具栏上的扩展图标，也就是一键把本扩展打开。
+        </p>
+        <p id="keys-status" role="status" aria-live="polite">正在检查快捷键绑定状态……</p>
+        <ul id="keys-list"></ul>
+        <p>
+          <button type="button" id="keys-open">打开快捷键设置页</button>
+        </p>
+      </div>
+    </section>
+
+    <!-- ==================== 二、在哪些网站启用 ==================== -->
+    <section class="group" aria-labelledby="grp-sites-h">
+      <h2 id="grp-sites-h">二、在哪些网站启用</h2>
+
+      <!-- 「三种启用方式」由板块一移来（owner 2026-10-10）：它讲的正是"在哪些网站启用"，
+           放在讲这件事的板块里才找得到；板块一原来的长引导句随之删掉（重复且啰嗦）。 -->
+      <div class="item">
+        <h3 id="modes-h"><span class="kind kind-info">说明：</span>三种启用方式</h3>
+        <ul>
+          <li><strong>仅本页</strong>：不添加站点，直接在当前页面按 <span data-ws-key="toggle">Ctrl+Shift+Z</span>。刷新即失效，不需要任何网站授权。</li>
+          <li><strong>始终为此站点</strong>：在下面「添加站点」里添加。之后打开该网站<strong>即自动开启</strong>增强；
+            在该站按 <span data-ws-key="toggle">Ctrl+Shift+Z</span> 可关闭（会记住你的选择）。</li>
+          <li><strong>全局</strong>：在下面勾选「全局启用」，所有网站<strong>打开即自动开启</strong>增强，不必逐个添加；
+            想临时关掉某个网站，在该网站按 <span data-ws-key="toggle">Ctrl+Shift+Z</span>（只对当前页面有效，刷新后随全局重新开启）。
+            敏感站点默认不处理（在该站连按两次 <span data-ws-key="toggle">Ctrl+Shift+Z</span> 可强制开启）。</li>
+
+        </ul>
+      </div>
+
+      <p id="sites-mode" class="hint" role="status" aria-live="polite"></p>
+
+      <div class="routes">
+        <div class="item">
+          <h3 id="global-h"><span class="kind kind-set">设置：</span>全局启用</h3>
+          <label>
+            <input type="checkbox" id="global-toggle">
+            在所有网站启用（需授权访问所有站点）
+          </label>
+          <!-- 长度红线（verify-options-page ⑥）：全局说明 ≤40 字，勿写回啰嗦版本 -->
+          <p class="hint">勾选后所有网站打开即自动开启，不必逐个添加。敏感站点默认不处理。</p>
+          <p id="global-status" role="status" aria-live="polite"></p>
+        </div>
+
+        <p class="route-or">或</p>
+
+        <div class="item">
+          <h3 id="add-site-h"><span class="kind kind-set">设置：</span>添加站点</h3>
+          <form id="add-form">
+            <label for="site-input">网站地址（例如 example.com）</label><br>
+            <input id="site-input" type="text" autocomplete="off" spellcheck="false"
+                   placeholder="example.com" aria-describedby="add-desc">
+            <button type="submit">添加并授权</button>
+            <p id="add-desc" class="hint">
+              常用网站逐个添加。添加后打开该站即自动开启增强；在该站按 <span data-ws-key="toggle">Ctrl+Shift+Z</span> 可关闭并记住。
+            </p>
+            <p id="add-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <!-- 「已启用的站点」不是一个独立的设置项，而是上面这个添加动作的结果清单，
+               所以并进本条目、降一级做 h4（owner 2026-10-10）：按 3 只跳真正的设置项，
+               清单这类「结果」不再占掉一个同级条目。 -->
+          <h4 id="sites-h">已启用的站点</h4>
+          <ul id="site-list" aria-describedby="sites-empty"></ul>
+          <p id="sites-empty" class="hint">尚未启用任何站点。先按上面两条做法之一设置，再到该网站按 <span data-ws-key="toggle">Ctrl+Shift+Z</span> 开启增强。</p>
+          <p id="sites-status" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <!-- 「说明：始终不处理的页面」已删除（owner 2026-10-10）：
+           它和「敏感站点保护」讲的是同一件事的两面，分散在两块里要用户自己拼。
+           现在统一写在第三块的「敏感站点保护」条目里（含"从不处理"与"仅本地修复"两级）。 -->
+    </section>
+
+    <!-- ==================== 三、智能功能 ==================== -->
+    <section class="group" aria-labelledby="grp-ai-h">
+      <h2 id="grp-ai-h">三、智能功能（会调用大模型）</h2>
+      <p class="hint">
+        默认使用官方公益中转，不需要您做任何配置。
+      </p>
+
+      <!-- 顺序：先讲"有什么用、开不开"，再讲"用哪个接口"（owner 2026-10-10：
+           原顺序是先让人挑模型、之后才说用途，本末倒置）。
+           快捷键一律只写在板块一，这里不再重复。 -->
+      <div class="item">
+        <h3 id="ai-master-h"><span class="kind kind-set">设置：</span>智能功能的用途与开关</h3>
+        <p class="hint" id="ai-master-desc">
+          开启后，扩展会按页面场景自动提供：场景解析播报（这是什么页面、操作难度）、图片描述、
+          页面结构摘要、模糊链接意图补充（给「点击这里」类链接补一句去向说明）、
+          图表描述（画布图表由视觉模型说明类型、坐标轴与趋势，标注「AI推测」）。
+          纯装饰图片不消耗调用次数；常见功能图标（购物车、搜索、关闭等）用本地词典识别，不发给模型。
+        </p>
+        <p>
+          <label>
+            <input type="checkbox" id="ai-master">
+            开启智能功能（会调用大模型）
+          </label>
+        </p>
+        <p>
+          <label>
+            <input type="checkbox" id="img-limit-on">
+            限制每天最多描述多少张图片
+          </label>
+        </p>
+        <p>
+          <label for="img-limit">每天上限（张）</label><br>
+          <input id="img-limit" type="text" inputmode="numeric" size="6" value="100"
+                 aria-describedby="img-limit-hint">
+        </p>
+        <p class="hint" id="img-limit-hint"></p>
+        <p>
+          <label>
+            <input type="checkbox" id="hover-replay">
+            鼠标悬停图片 1 秒重听描述（默认关闭）
+          </label>
+          <span class="hint">供使用鼠标的低视力用户重听描述。</span>
+        </p>
+        <p>
+          <button type="button" id="ai-save2">保存</button>
+        </p>
+        <p id="img-usage" class="hint"></p>
+        <p id="img-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="item">
+        <h3 id="ai-h"><span class="kind kind-set">设置：</span>大模型接口（公益中转 / 自己的接口）</h3>
+        <p class="hint" id="ai-desc">
+          默认使用<strong>官方公益中转</strong>：无需注册平台、无需充值、无需配置密钥，
+          开箱即用（有每日公益额度限制）。高级用户也可切换为<strong>自己的接口</strong>
+          （自带 API 密钥）。密钥不会明文保存，也不会再次显示。
+        </p>
+
+        <fieldset id="ai-source-fs">
+          <legend>接口来源</legend>
+          <p>
+            <label>
+              <input type="radio" name="ai-source" value="builtin">
+              使用官方公益中转（默认 · 无需配置密钥）
+            </label>
+          </p>
+          <div id="ai-builtin-panel" class="hint" hidden>
+            <p id="ai-builtin-status">正在读取公益中转状态…</p>
+            <p>
+              <button type="button" id="ai-builtin-refresh">刷新状态</button>
+            </p>
+          </div>
+          <p>
+            <label>
+              <input type="radio" name="ai-source" value="custom">
+              使用自己的接口（高级 · 自带 API 密钥）
+            </label>
+          </p>
+        </fieldset>
+
+        <div id="ai-custom-fields" hidden>
+        <p class="hint">
+          <strong>前置档 primary（可选）</strong>优先承担请求，扩展按每秒 1 次节流；
+          图片描述限速溢出的请求自动交给默认档，整体吞吐不低于每秒 2 张。
+          整块留空则只使用默认档；<strong>只填部分模型也可以</strong>（例如只填文本模型），
+          没填的那一类（文本 / 视觉）自动改用默认档的模型。
+          一旦填了任何一项，接口地址与密钥都必须补齐。
+          <strong>默认档 default（必填）</strong>是智能功能的基线，并承担全部决策模型调用；
+          <strong>接口地址、文本模型、视觉模型、决策模型四项都必填</strong>，缺任一项智能功能不可用。
+          两档各自使用独立的 API 密钥。接口地址填到 <code>/v1</code> 为止。
+        </p>
+
+        <h4 id="ai-primary-h">前置档 primary（可选 · 优先使用 · 限速 1 次/秒 · 可只填部分模型）</h4>
+        <p>
+          <label for="ai-primary-baseurl">前置档接口地址（到 /v1 为止）</label><br>
+          <input id="ai-primary-baseurl" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="https://openrouter.ai/api/v1" aria-describedby="ai-desc">
+        </p>
+        <p>
+          <label for="ai-primary-textmodel">前置档文本模型 ID</label><br>
+          <input id="ai-primary-textmodel" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="例如 deepseek-chat">
+        </p>
+        <p>
+          <label for="ai-primary-visionmodel">前置档视觉模型 ID</label><br>
+          <input id="ai-primary-visionmodel" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="例如 qwen2.5-vl-7b-instruct">
+        </p>
+        <p>
+          <label for="ai-primary-apikey">前置档 API 密钥</label><br>
+          <input id="ai-primary-apikey" type="password" autocomplete="off" spellcheck="false"
+                 aria-describedby="ai-primary-key-state">
+          <span id="ai-primary-key-state" class="hint"></span>
+        </p>
+
+        <h4 id="ai-default-h">默认档 default（必填 · 智能功能基线 · 承担决策模型调用）</h4>
+        <p>
+          <label for="ai-default-baseurl">默认档接口地址（到 /v1 为止）</label><br>
+          <input id="ai-default-baseurl" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="https://openrouter.ai/api/v1">
+        </p>
+        <p>
+          <label for="ai-default-textmodel">默认档文本模型 ID</label><br>
+          <input id="ai-default-textmodel" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="例如 deepseek-chat">
+        </p>
+        <p>
+          <label for="ai-default-visionmodel">默认档视觉模型 ID</label><br>
+          <input id="ai-default-visionmodel" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="例如 qwen2.5-vl-7b-instruct">
+        </p>
+        <p>
+          <label for="ai-default-decisionmodel">决策模型 ID（必填 · 固定走默认档）</label><br>
+          <input id="ai-default-decisionmodel" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="例如 typesafe/jev-1.13">
+          <span class="hint">决策模型：对页面回答类型化问题（页面类型/操作难度/是否需要增强），
+          返回概率而非文本。填错或留空会让场景解析、链接意图等判定失效（其余功能不受影响）。</span>
+        </p>
+        <p>
+          <label for="ai-default-apikey">默认档 API 密钥</label><br>
+          <input id="ai-default-apikey" type="password" autocomplete="off" spellcheck="false"
+                 aria-describedby="ai-default-key-state">
+          <span id="ai-default-key-state" class="hint"></span>
+        </p>
+        </div><!-- /ai-custom-fields：仅「使用自己的接口」时显示 -->
+
+        <!-- 保存 / 清除前置档密钥 / 清除默认档密钥 + 校验结果说明，同样只在「使用自己的接口」
+             （BYOK）下出现。公益中转零配置——这几个按钮和那段「前置档文本：未配置，跳过」式的
+             校验结果在这里没有可操作的下一步，堆着只会让人以为漏配了东西。
+             公益中转一侧只保留自己的状态行与「刷新状态」按钮（见上面的 ai-builtin-panel）。
+             owner 2026-10-10 反馈；由 options.js 的 syncAiModeUi() 控制，口径与密钥金库一节一致。 -->
+        <div id="ai-custom-actions">
+          <p>
+            <button type="button" id="ai-save">保存</button>
+            <button type="button" id="ai-clear-primary" hidden>清除前置档密钥</button>
+            <button type="button" id="ai-clear-default" hidden>清除默认档密钥</button>
+          </p>
+          <p id="ai-status" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <!-- 密钥金库只在「使用自己的接口」时需要：公益中转走服务端预配，根本不读金库密钥
+           （ai.js 对 needsApiKey:false 的 provider 不调用 WS_SECRETS.loadApiKey）。
+           因此在「公益中转已保存」时整块隐藏，避免用户以为必须设主密码而卡住。
+           owner 2026-10-10 反馈；由 options.js 的 syncVaultSectionUi() 控制。 -->
+      <div class="item" id="vault-section" hidden>
+        <h3 id="vault-h"><span class="kind kind-set">设置：</span>密钥金库主密码（仅「使用自己的接口」时需要）</h3>
+        <p class="hint" id="vault-desc">
+          <strong>使用官方公益中转时无需配置密钥，本节可忽略</strong>；以下仅在您改用「自己的接口」时需要。
+          API 密钥用浏览器内置加密（AES-GCM）存盘，由您的主密码保护：主密码不会存储、
+          不会上传，忘记后只能重新填写密钥。每次重新打开浏览器后第一张图片描述前
+          需要先在这里解锁一次（或重新输入主密码），之后本浏览器会话内不再询问。
+        </p>
+        <p id="vault-state" role="status" aria-live="polite" class="hint"></p>
+        <p id="vault-pass-row">
+          <label for="vault-pass">设置主密码（至少 8 位）</label><br>
+          <input id="vault-pass" type="password" autocomplete="new-password"
+                 aria-describedby="vault-desc">
+          <span class="hint">忘记主密码无法找回密钥，请记在您可靠的地方。</span>
+        </p>
+        <p>
+          <button type="button" id="vault-save">设置/更新主密码</button>
+        </p>
+        <p id="vault-unlock-row" hidden>
+          <label for="vault-unlock">解锁（输入主密码）</label><br>
+          <input id="vault-unlock" type="password" autocomplete="current-password">
+          <button type="button" id="vault-do-unlock">解锁</button>
+        </p>
+        <p>
+          <button type="button" id="vault-lock" hidden>立即锁定</button>
+        </p>
+        <p id="vault-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="item">
+        <h3 id="privacy-gate-h"><span class="kind kind-set">设置：</span>敏感站点保护</h3>
+        <p class="hint" id="privacy-gate-desc">
+          政务、医疗、金融类网站默认<b>完全不处理</b>：页面不做任何修改，内容也不外发，判定全部在本机完成。
+          <b>你自己开启过的</b>这类网站（开启过它、或按过快捷键）会直接正常运行——和普通网站一样，
+          不再提示这类网站的隐私限制，并出现在下面的列表里。
+          「全局启用」时遇到这类网站默认关闭：要开启就<b>连按两次 <span data-ws-key="toggle">Ctrl+Shift+Z</span></b>
+        </p>
+        <p class="hint" id="privacy-hard-desc">
+          银行、支付类网站与浏览器内部页面（chrome:// 等）扩展完全不处理，开了「全局启用」也一样。
+        </p>
+        <!-- 原为「列出所有检测到的敏感站点 + 逐站勾选」（owner 2026-10-10：列表太长，
+             让人在几千条里导航不现实）→ 改成"输入网址 → 开启"的填空框，只显示已开启的。 -->
+        <form id="sensitive-form">
+          <label for="sensitive-input">为某个网站放行（会开启增强，并允许发送该站页面内容）</label><br>
+          <input id="sensitive-input" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="example.com" aria-describedby="privacy-gate-desc">
+          <button type="submit">开启</button>
+          <p id="sensitive-status" role="status" aria-live="polite"></p>
+        </form>
+        <h4 id="sensitive-list-h">已单独放行的网站</h4>
+        <ul id="sensitive-list"></ul>
+        <p id="sensitive-empty" class="hint">还没有为任何网站单独放行。</p>
+      </div>
+    </section>
+
+    <!-- ==================== 四、浏览体验 ==================== -->
+    <section class="group" aria-labelledby="grp-ux-h">
+      <h2 id="grp-ux-h">四、浏览体验</h2>
+
+      <div class="item">
+        <h3 id="announce-h"><span class="kind kind-set">设置：</span>播报增强做了什么</h3>
+        <p>
+          <label>
+            <input type="checkbox" id="announce-changes">
+            播报插件修复了哪些内容（推荐）
+          </label>
+        </p>
+        <p class="hint" id="announce-desc">
+          开启后，开启增强时会说明「修复了 3 个标题、隐藏 2 个噪音块」这类结果，图片描述也会报进度。
+          关掉后只说「无障碍增强已开启」，不再逐项报告改了哪些内容；
+          图片无法加载、验证码这类需要你知道的提示仍然会播。
+        </p>
+        <p id="announce-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="item">
+        <h3 id="ux-h"><span class="kind kind-set">设置：</span>记住并恢复上次浏览位置</h3>
+        <p>
+          <label>
+            <input type="checkbox" id="position-memory">
+            记住并恢复上次浏览位置（推荐）
+          </label>
+        </p>
+        <!-- 文案按 owner 2026-10-10 原话（只保留"离开/刷新后回到原位并报出小节标题"） -->
+        <p class="hint" id="position-memory-desc">
+          开启后，您网页读到一半离开，或者刷新以后，能够自动回到离开时的位置，并报出所在小节的标题。
+        </p>
+        <p id="ux-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="item">
+        <h3 id="live-h"><span class="kind kind-set">设置：</span>动态变化播报</h3>
+        <p class="hint" id="live-desc">
+          开启后，页面上新增或移除大段内容时会播报一句「页面有更新：新增 2 段内容」。
+          适合秒杀、抢购、聊天等会自动刷新的页面，多数静态页面不需要。
+        </p>
+        <!-- 原为「列出所有访问过的站点 + 逐站开关」（owner 2026-10-10：列表太长，
+             让人在几千条里导航不现实）→ 改成"输入网址 → 开启"的填空框，只显示已开启的。 -->
+        <form id="live-form">
+          <label for="live-input">为某个网站开启播报</label><br>
+          <input id="live-input" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="example.com" aria-describedby="live-desc">
+          <button type="submit">开启</button>
+          <p id="live-status" role="status" aria-live="polite"></p>
+        </form>
+        <h4 id="live-list-h">已开启播报的网站</h4>
+        <ul id="live-list"></ul>
+        <p id="live-empty" class="hint">还没有为任何网站开启。</p>
+      </div>
+    </section>
+
+    <!-- ==================== 五、隐私与数据 ==================== -->
+    <section class="group" aria-labelledby="privacy-h">
+      <h2 id="privacy-h">五、隐私与数据（说明，无需设置）</h2>
+      <!-- 开头一句不动（owner 2026-10-10 明确保留）；其余整段按 owner 指定原文替换。 -->
+      <p class="hint">
+        本扩展不收集、不上传任何浏览数据，所有设置仅保存在本地浏览器中。
+        智能功能会将网页内容发送到AI服务器，其中不会包含您的任何个人信息或者输入内容。敏感站点的智能功能默认关闭。
+      </p>
+    </section>
+  </main>
+  <script src="../data/content-files.js"></script>
+  <!-- 密钥保管只在 Service Worker 侧进行（key-vault.js 经 importScripts 只加载进 SW）；
+       设置页一律经 WS_KEY_* 消息询问，本页零密钥接触。 -->
+  <script src="options.js"></script>
+</body>
+</html>

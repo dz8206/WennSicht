@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>循光WennSicht 第一次使用</title>
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+  <main class="wizard">
+    <h1>循光WennSicht 第一次使用</h1>
+    <!-- 2026-11-11：进度行不再单独下 aria-live（否则就是第二个播报源）。
+         它的文字由下面卡片的 aria-describedby 带出来：聚焦卡片时读一次即可。 -->
+    <p id="wizard-progress"></p>
+
+    <section class="card" id="wizard-step" aria-labelledby="wizard-step-title" aria-describedby="wizard-progress" tabindex="-1"></section>
+
+    <div class="demo-wrap" id="wizard-demo-wrap" hidden>
+      <iframe id="demo-frame" title="示例网页，用来演示各个按键的效果"></iframe>
+      <p class="hint demo-note" id="demo-note"></p>
+    </div>
+
+    <!-- 这一页**唯一**的播报源：所有需要读屏说出来的话都只走这里（见 welcome.js 的 say()）。
+         其它看似「状态行」的元素（#wizard-progress / #wizard-step-status / #w-nvda-status）
+         都只是看得见的文字，不带 aria-live / role=status —— 否则同一句话会被播两遍。 -->
+    <p class="sr-only" id="wizard-said" role="status" aria-live="polite"></p>
+
+    <nav class="wizard-nav" aria-label="引导翻页">
+      <button type="button" class="secondary" id="wizard-back">上一项</button>
+      <button type="button" id="wizard-next">下一项</button>
+    </nav>
+    <p class="hint" id="wizard-foot">
+      这一页只在第一次安装时出现。走完时全部设置都已保存；以后想再看，到 循光WennSicht 设置页顶部点「重新走一遍『第一次使用』引导」。
+    </p>
+  </main>
+  <!-- 全局/站点开关需要内容脚本清单与注册 ID 约定 -->
+  <script src="../data/content-files.js"></script>
+  <script src="welcome.js"></script>
+</body>
+</html>

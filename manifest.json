@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "default_locale": "zh_CN",
+  "name": "__MSG_appName__",
+  "version": "0.2.2",
+  "description": "__MSG_appDesc__",
+  "minimum_chrome_version": "130",
+  "permissions": ["activeTab", "scripting", "storage", "downloads"],
+  "host_permissions": ["http://127.0.0.1/*", "https://api.wennlicht.us.ci/*"],
+  "optional_host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background/service-worker.js"
+  },
+  "action": {
+    "default_title": "循光WennSicht 无障碍增强（点击打开设置）",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "options_page": "src/options/options.html",
+  "commands": {
+    "toggle-wennsicht": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Z"
+      },
+      "description": "开启或关闭当前页面的无障碍增强"
+    },
+    "pause-image-description": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y"
+      },
+      "description": "暂停或继续 AI 图片描述"
+    },
+    "send-feedback": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+U"
+      },
+      "description": "打开问题反馈窗口：写一句描述即可直接发送给开发者（发送内容可见、可取消）"
+    },
+    "page-summary": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S"
+      },
+      "description": "朗读当前页面结构摘要（有什么、主内容、核心操作）"
+    },
+    "page-qa": {
+      "description": "页面问答：问「第 N 块讲什么」、表格内容或两处内容的比较"
+    },
+    "image-longdesc": {
+      "description": "图片长描述：把光标移到图上再按，听这张图的详细描述；图里有文字会完整转录"
+    },
+    "layout-map": {
+      "description": "布局地图：播报页面哪几块值得读、哪几块可跳过（不播方位）"
+    }
+  }
+}
